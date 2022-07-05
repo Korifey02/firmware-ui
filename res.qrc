@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>res/icon.ico</file>
+  </qresource>
+  <qresource prefix="newPrefix">
+    <file>res/terminator.ico</file>
+  </qresource>
+</RCC>
