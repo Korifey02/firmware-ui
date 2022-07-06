@@ -1,7 +1,9 @@
 import os
 import sys
 import glob
+from numpy import MAY_SHARE_EXACT, byte
 import serial.tools.list_ports
+import serial
 
 import PySide6
 from PyQt6.QtWidgets import QTableWidgetItem
@@ -52,10 +54,12 @@ class MyWindow(QMainWindow):
         # compare files
         self.ui.actionCompare.triggered.connect(self.compareFiles)
         # find all serial ports
-        # self.ui.ChoosePort.clicked.connect(self.checkPorts)
+        self.ui.ChoosePort.clicked.connect(self.checkPorts)
         self.ui.finishCompare.clicked.connect(self.closeCompare)
         # it trigers when user change number in spinbox
         self.ui.baseAdress.valueChanged.connect(self.updateTable)
+
+        self.ui.Write.clicked.connect(self.writeData)
 
         # I hide second table
         self.ui.secondAdressTable.setVisible(0)
@@ -65,6 +69,12 @@ class MyWindow(QMainWindow):
         # self.tableData = []
         self.firstFileData = []
         self.secondFileData = []
+        
+        self.ChoosenPort = 'Порт не выбран'
+        self.AvalaiblePorts = []
+
+        self.FileData = ''
+        self.DataToSend = ''
 
         # code
         self.show()
@@ -87,6 +97,13 @@ class MyWindow(QMainWindow):
                 self.ui.plainTextEdit.setPlainText("Процесс выполнения")
             # flag which shows that almost is okey
             ok = True
+            
+            # bufMass = []
+            # for i in range(len(data)):
+            #     print(data[i])
+            #     print(chr(data[i]))
+            #     bufMass.append(chr(data[i]))
+            self.DataToSend = data
             self.firstFileData = makeHexArray(data)
             self.fillTheTables(1, self.ui.baseAdress.value())
             # Если данные успешно считаны вывести результат в окно отчета
@@ -128,9 +145,10 @@ class MyWindow(QMainWindow):
             print(len(self.firstFileData))
             if len(self.firstFileData) == len(self.secondFileData):
                 for i in range(len(self.firstFileData)):
-                    if self.firstFileData[i] != self.secondFileData:
+                    if self.firstFileData[i] != self.secondFileData[i]:
                         difference.append(i)
                 # print(*difference)
+                a = difference[0]
 
             else:
                 print("Sizes of two files are not equal")
@@ -183,15 +201,84 @@ class MyWindow(QMainWindow):
 
         # when something is changed in spinbox, my array also keep last opened file!
     def checkPorts(self):
-        ports = serial.tools.list_ports.comports()
-        for port, desc, hwid in sorted(ports):
-            print("{}: {} [{}]".format(port, desc, hwid))
+
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            # this excludes your current terminal "/dev/tty"
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                pass
+        self.ui.portList.clear()
+        self.ui.portList.addItems(result)
+        
+        self.AvalaiblePorts = result
 
     def readData(self):
         pass
 
     def writeData(self):
-        pass
+
+        myRequest = []
+        if self.AvalaiblePorts:
+            self.ChoosenPort = self.ui.portList.currentText()
+            print(self.ChoosenPort)
+            # then we ready to start communication
+
+            firstSIgnal = chr(0x1A)
+            secondSignal = chr(self.ui.baseAdress.value())
+
+            # inBytes = bytes(buf, 'utf-8')
+            # inBytes += bytes(buf2, 'utf-8')
+
+            mass = [firstSIgnal, secondSignal]
+            message = bytes(''.join(mass), 'utf8')
+
+
+            # for i in range(len(self.firstFileData)):
+            #     b = self.firstFileData[i]
+
+            ser = serial.Serial()
+            ser.baudrate = 115200
+            ser.port = self.ChoosenPort
+            ser.open()
+            print(ser.is_open)
+            # ser.write(message)
+            # a = ser.read(4)
+            # print(a)
+
+            # a = b'\x1cLor'
+            # # # 4704
+            # result = a[1:]
+            # notInBytes = result.decode("utf-8")
+            # sum = 0
+            # print(notInBytes)
+            # for i in range(len(notInBytes)):
+            #     print(ord(notInBytes[i]))
+            #     if i + 1 == len(notInBytes):
+                    
+            #         sum += ord(notInBytes[i])
+            #     else:   
+            #         sum += ord(notInBytes[i]) * 256
+            # print(a)
+            # print(sum)
+
+            ser.close()
+
+        else:
+            print("Ports are not choosen")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

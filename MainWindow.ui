@@ -34,180 +34,221 @@
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <widget class="QFrame" name="frame">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
-      </property>
+     <widget class="QFrame" name="frame_5">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QPlainTextEdit" name="plainTextEdit">
+        <widget class="QFrame" name="frame">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>150</height>
+           <height>16777215</height>
           </size>
          </property>
-         <property name="styleSheet">
-          <string notr="true">QPlainTextEdit{
-border: 2px solid #A4004D;
-background-color: #404040;
-color: white;
-}</string>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-         <property name="plainText">
-          <string>Добро пожаловать!</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="styleSheet">
-          <string notr="true">color: rgb(255, 255, 255);</string>
-         </property>
-         <property name="text">
-          <string>Адрес</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="baseAdress">
-         <property name="styleSheet">
-          <string notr="true">QSpinBox{
-border: 2px solid #A4004D;
-background-color: #404040;
-color: white;
-}</string>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_2">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QFrame" name="frame_3">
+           <widget class="QPlainTextEdit" name="plainTextEdit">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>150</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPlainTextEdit{
+border: 2px solid #A4004D;
+background-color: #404040;
+color: white;
+}</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="plainText">
+             <string>Добро пожаловать!</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>Адрес</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="baseAdress">
+            <property name="styleSheet">
+             <string notr="true">QSpinBox{
+border: 2px solid #A4004D;
+background-color: #404040;
+color: white;
+}</string>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>29</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_2">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout">
+            <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
-              <widget class="QTableWidget" name="adressTable">
-               <property name="styleSheet">
-                <string notr="true">QTableWidget{
+              <widget class="QFrame" name="frame_3">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QTableWidget" name="adressTable">
+                  <property name="styleSheet">
+                   <string notr="true">QTableWidget{
 border: 2px solid #A4004D;
 background-color: #404040;
 color: white;
 }</string>
-               </property>
-               <property name="editTriggers">
-                <set>QAbstractItemView::NoEditTriggers</set>
-               </property>
-               <column>
-                <property name="text">
-                 <string>Adress</string>
-                </property>
-                <property name="background">
-                 <color>
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>0</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>4</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>8</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>12</string>
-                </property>
-               </column>
+                  </property>
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::NoEditTriggers</set>
+                  </property>
+                  <column>
+                   <property name="text">
+                    <string>Adress</string>
+                   </property>
+                   <property name="background">
+                    <color>
+                     <red>0</red>
+                     <green>0</green>
+                     <blue>0</blue>
+                    </color>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>0</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>4</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>8</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>12</string>
+                   </property>
+                  </column>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QTableWidget" name="secondAdressTable">
+                  <property name="styleSheet">
+                   <string notr="true">QTableWidget{
+border: 2px solid #A4004D;
+background-color: #404040;
+color: white;
+}</string>
+                  </property>
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::NoEditTriggers</set>
+                  </property>
+                  <property name="alternatingRowColors">
+                   <bool>false</bool>
+                  </property>
+                  <column>
+                   <property name="text">
+                    <string>Adress</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>0</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>4</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>8</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>12</string>
+                   </property>
+                  </column>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item>
-              <widget class="QTableWidget" name="secondAdressTable">
+              <widget class="QPushButton" name="finishCompare">
                <property name="styleSheet">
-                <string notr="true">QTableWidget{
-border: 2px solid #A4004D;
+                <string notr="true">QPushButton{
+border:  2px solid #A4004D;
 background-color: #404040;
+color: white;
+}
+
+QPushButton:hover{
+border: 2px solid #A4004D;
+background-color: #444444;
+color: white;
+}
+
+QPushButton:pressed{
+border: 2px solid white;
+background-color: #444444;
 color: white;
 }</string>
                </property>
-               <property name="editTriggers">
-                <set>QAbstractItemView::NoEditTriggers</set>
+               <property name="text">
+                <string>Закончить сравнение</string>
                </property>
-               <property name="alternatingRowColors">
-                <bool>false</bool>
-               </property>
-               <column>
-                <property name="text">
-                 <string>Adress</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>0</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>4</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>8</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>12</string>
-                </property>
-               </column>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="finishCompare">
+           <widget class="QPushButton" name="Read">
             <property name="styleSheet">
              <string notr="true">QPushButton{
 border:  2px solid #A4004D;
@@ -228,7 +269,33 @@ color: white;
 }</string>
             </property>
             <property name="text">
-             <string>Закончить сравнение</string>
+             <string>Считать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="Write">
+            <property name="styleSheet">
+             <string notr="true">QPushButton{
+border:  2px solid #A4004D;
+background-color: #404040;
+color: white;
+}
+
+QPushButton:hover{
+border: 2px solid #A4004D;
+background-color: #444444;
+color: white;
+}
+
+QPushButton:pressed{
+border: 2px solid white;
+background-color: #444444;
+color: white;
+}</string>
+            </property>
+            <property name="text">
+             <string>Записать</string>
             </property>
            </widget>
           </item>
@@ -236,9 +303,46 @@ color: white;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="Read">
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
+        <widget class="QFrame" name="frame_4">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>817</width>
+              <height>17</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_6">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QPushButton" name="ChoosePort">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton{
 border:  2px solid #A4004D;
 background-color: #404040;
 color: white;
@@ -255,62 +359,27 @@ border: 2px solid white;
 background-color: #444444;
 color: white;
 }</string>
-         </property>
-         <property name="text">
-          <string>Считать</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="Write">
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-border:  2px solid #A4004D;
+               </property>
+               <property name="text">
+                <string>Выбрать порт</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="portList">
+               <property name="styleSheet">
+                <string notr="true">QComboBox{
+border: 2px solid #A4004D;
 background-color: #404040;
 color: white;
-}
-
-QPushButton:hover{
-border: 2px solid #A4004D;
-background-color: #444444;
-color: white;
-}
-
-QPushButton:pressed{
-border: 2px solid white;
-background-color: #444444;
-color: white;
 }</string>
-         </property>
-         <property name="text">
-          <string>Записать</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="ChoosePort">
-         <property name="styleSheet">
-          <string notr="true">QPushButton{
-border:  2px solid #A4004D;
-background-color: #404040;
-color: white;
-}
-
-QPushButton:hover{
-border: 2px solid #A4004D;
-background-color: #444444;
-color: white;
-}
-
-QPushButton:pressed{
-border: 2px solid white;
-background-color: #444444;
-color: white;
-}</string>
-         </property>
-         <property name="text">
-          <string>Выбрать порт</string>
-         </property>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

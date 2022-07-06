@@ -16,11 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QFrame, QHBoxLayout,
-    QHeaderView, QLabel, QMainWindow, QMenu,
-    QMenuBar, QPlainTextEdit, QPushButton, QSizePolicy,
-    QSpinBox, QTableWidget, QTableWidgetItem, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QFrame,
+    QHBoxLayout, QHeaderView, QLabel, QMainWindow,
+    QMenu, QMenuBar, QPlainTextEdit, QPushButton,
+    QSizePolicy, QSpacerItem, QSpinBox, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 import res_rc
 
 class Ui_MainWindow(object):
@@ -44,9 +44,15 @@ class Ui_MainWindow(object):
         self.actionCompare.setObjectName(u"actionCompare")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_3 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.frame = QFrame(self.centralwidget)
+        self.verticalLayout_5 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.frame_5 = QFrame(self.centralwidget)
+        self.frame_5.setObjectName(u"frame_5")
+        self.frame_5.setFrameShape(QFrame.StyledPanel)
+        self.frame_5.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_4 = QVBoxLayout(self.frame_5)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.frame = QFrame(self.frame_5)
         self.frame.setObjectName(u"frame")
         self.frame.setMaximumSize(QSize(16777215, 16777215))
         self.frame.setFrameShape(QFrame.StyledPanel)
@@ -79,6 +85,7 @@ class Ui_MainWindow(object):
 "color: white;\n"
 "}")
         self.baseAdress.setMaximum(1000)
+        self.baseAdress.setValue(29)
 
         self.verticalLayout.addWidget(self.baseAdress)
 
@@ -214,8 +221,28 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.Write)
 
-        self.ChoosePort = QPushButton(self.frame)
+
+        self.verticalLayout_4.addWidget(self.frame)
+
+        self.frame_4 = QFrame(self.frame_5)
+        self.frame_4.setObjectName(u"frame_4")
+        self.frame_4.setFrameShape(QFrame.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.frame_4)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalSpacer = QSpacerItem(817, 17, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+
+        self.frame_6 = QFrame(self.frame_4)
+        self.frame_6.setObjectName(u"frame_6")
+        self.frame_6.setFrameShape(QFrame.StyledPanel)
+        self.frame_6.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_3 = QVBoxLayout(self.frame_6)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.ChoosePort = QPushButton(self.frame_6)
         self.ChoosePort.setObjectName(u"ChoosePort")
+        self.ChoosePort.setMinimumSize(QSize(100, 25))
         self.ChoosePort.setStyleSheet(u"QPushButton{\n"
 "border:  2px solid #A4004D;\n"
 "background-color: #404040;\n"
@@ -234,10 +261,26 @@ class Ui_MainWindow(object):
 "color: white;\n"
 "}")
 
-        self.verticalLayout.addWidget(self.ChoosePort)
+        self.verticalLayout_3.addWidget(self.ChoosePort)
+
+        self.portList = QComboBox(self.frame_6)
+        self.portList.setObjectName(u"portList")
+        self.portList.setStyleSheet(u"QComboBox{\n"
+"border: 2px solid #A4004D;\n"
+"background-color: #404040;\n"
+"color: white;\n"
+"}")
+
+        self.verticalLayout_3.addWidget(self.portList)
 
 
-        self.verticalLayout_3.addWidget(self.frame)
+        self.horizontalLayout_2.addWidget(self.frame_6)
+
+
+        self.verticalLayout_4.addWidget(self.frame_4)
+
+
+        self.verticalLayout_5.addWidget(self.frame_5)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QMenuBar(MainWindow)
