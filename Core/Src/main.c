@@ -34,6 +34,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DEFAULT_SIZE_WRITE_STM 128
+#define BUFFER_SIZE 400 // Size of buffers for
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,10 +52,12 @@ DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 uint8_t RX=0;
-uint8_t receive_buffer[60] = {}; // buffer for receive
-uint8_t transmit_buffer[60] = {}; // buffer for transmit
+uint8_t receive_buffer[BUFFER_SIZE] = {}; // buffer for receive
+uint8_t transmit_buffer[BUFFER_SIZE] = {}; // buffer for transmit
 uint8_t START_SECTOR_OF_FIRMWARE = 0;
 uint32_t firmware_size = 0; //size of firmware
+uint32_t count_of_read = 0;
+uint32_t SIZE_BLOCK = DEFAULT_SIZE_WRITE_STM;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -111,7 +115,7 @@ int main(void)
   while (1)
   {
 	  RX = 0;
-	  memset(receive_buffer, 0, 60);
+	  memset(receive_buffer, 0, BUFFER_SIZE);
 	  HAL_UART_Receive_DMA(&huart1, receive_buffer, 20);
 	  while(!RX) {}
 	  HAL_UART_DMAStop(&huart1);
@@ -143,9 +147,60 @@ int main(void)
 	  		transmit_buffer[3] = receive_buffer[2];
 	  		HAL_UART_Transmit(&huart1,transmit_buffer,4,5000);
 
+	  		HAL_Delay(10);
+
+	  		SIZE_BLOCK = DEFAULT_SIZE_WRITE_STM;
+
+	  		count_of_read = firmware_size / SIZE_BLOCK; // count of read from flash
+
+	  		// ******* start read firmware ************
+			for (uint32_t i = 0 ; i <= count_of_read; i++)
+			{
+			  // change SIZE_BLOCK if last block has less size
+			  if (i == count_of_read)
+			  {
+				  SIZE_BLOCK = firmware_size % (uint32_t)DEFAULT_SIZE_WRITE_STM;
+			  }
+
+			  memset(receive_buffer, 0, BUFFER_SIZE); //clear buffer for firmware
+			  int32_t page_start =  DEFAULT_SIZE_WRITE_STM * i + 4096 * (START_SECTOR_OF_FIRMWARE + 1); // number of start page
+			  //if (i >= 1)
+				//  page_start += i;
+
+			  W25qxx_ReadBytes(receive_buffer + 2, page_start, SIZE_BLOCK);
+
+			  receive_buffer[0] = 0x1F;
+			  receive_buffer[1] = SIZE_BLOCK;
+
+			  uint8_t rec_size = SIZE_BLOCK + 2;
+
+			  HAL_UART_Transmit(&huart1,receive_buffer,rec_size,5000);
+
+			  HAL_Delay(10);
+			}
+
+
 	  	  break;
 
 	  	  case 0x1B :
+	  		START_SECTOR_OF_FIRMWARE = receive_buffer[1];
+
+	  		firmware_size = (uint32_t)receive_buffer[2];
+			firmware_size <<= 8;
+			firmware_size += (uint32_t)receive_buffer[3];
+			firmware_size <<= 8;
+			firmware_size += (uint32_t)receive_buffer[4];
+
+			W25qxx_Init(); // initial flash
+
+			// make WRITE_READY
+			transmit_buffer[0] = 0x1D;
+
+
+
+			HAL_UART_Transmit(&huart1,transmit_buffer,2,5000);
+
+
 
 	  	  break;
 	  }
