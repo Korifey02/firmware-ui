@@ -1,18 +1,22 @@
 import os
 import sys
 import glob
-from numpy import MAY_SHARE_EXACT, byte
+from tkinter.ttk import Style
+from unittest import findTestCases
+from numpy import MAY_SHARE_EXACT, byte, full
 import serial.tools.list_ports
 import serial
+import math as m
 
 import PySide6
 from PyQt6.QtWidgets import QTableWidgetItem
 from PyQt6.uic.properties import QtGui
+from PySide6.QtGui import Qt, QPalette, QColor
 
 os.system('''pyside6-rcc res.qrc -o res_rc.py
 pyside6-uic MainWindow.ui > ui_mainwindow.py'''.replace('\n', '&'))
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QTableWidgetItem, QHeaderView
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QTableWidgetItem, QHeaderView, QStyleFactory
 
 from ui_mainwindow import Ui_MainWindow
 
@@ -60,17 +64,32 @@ class MyWindow(QMainWindow):
         self.ui.baseAdress.valueChanged.connect(self.updateTable)
 
         self.ui.Write.clicked.connect(self.writeData)
+        self.ui.Read.clicked.connect(self.readData)
+        self.ui.startCompare.clicked.connect(self.startCompareFiles)
+
+        self.ui.ShowReadData.clicked.connect(self.showReadData)
 
         # I hide second table
         self.ui.secondAdressTable.setVisible(0)
         self.ui.finishCompare.setVisible(0)
+        self.ui.startCompare.setVisible(0)
+        self.ui.compareResult.setVisible(0)
+
+        
+
+        self.ui.warningPorts.setVisible(0)
 
         # global var, which includes all data
         # self.tableData = []
         self.firstFileData = []
         self.secondFileData = []
+        self.readDataArray = [] 
+        self.openedDataSize = 0 
         
         self.ChoosenPort = 'Порт не выбран'
+        self.ui.portList.clear()
+        self.ui.portList.addItems([self.ChoosenPort])
+
         self.AvalaiblePorts = []
 
         self.FileData = ''
@@ -90,6 +109,9 @@ class MyWindow(QMainWindow):
             # get all data
             data = file.read()
             file.close()
+            self.openedDataSize = len(data)
+            self.DataToSend = data
+
             if not data:
                 self.ui.plainTextEdit.setPlainText("Считывание данных не выполнено! Выбранный вами файл пуст.")
                 return
@@ -103,7 +125,7 @@ class MyWindow(QMainWindow):
             #     print(data[i])
             #     print(chr(data[i]))
             #     bufMass.append(chr(data[i]))
-            self.DataToSend = data
+            
             self.firstFileData = makeHexArray(data)
             self.fillTheTables(1, self.ui.baseAdress.value())
             # Если данные успешно считаны вывести результат в окно отчета
@@ -121,6 +143,7 @@ class MyWindow(QMainWindow):
         # show the second table, comparable one
         self.ui.secondAdressTable.setVisible(1)
         self.ui.finishCompare.setVisible(1)
+        self.ui.startCompare.setVisible(1)
 
         FileDial = QFileDialog(caption="Выберите файл с прошивкой", filter="Текст (*.bin)")
         if (not FileDial.exec()): return
@@ -140,27 +163,43 @@ class MyWindow(QMainWindow):
             self.ui.plainTextEdit.appendPlainText("Считывание данных сравниваемого файла успешно выполнено...")
 
         # okey let's start comparing two files
+
+    def startCompareFiles(self):
         if self.firstFileData and self.secondFileData:
             difference = []
-            print(len(self.firstFileData))
+            ok = 1 
             if len(self.firstFileData) == len(self.secondFileData):
                 for i in range(len(self.firstFileData)):
                     if self.firstFileData[i] != self.secondFileData[i]:
                         difference.append(i)
-                # print(*difference)
-                a = difference[0]
-
+                        ok = 0
+                        break
+                if not ok:
+                    self.ui.compareResult.setText("Выбранные файлы не совпадают")
+                    self.ui.compareResult.setStyleSheet("QLabel {color: rgb(255, 6, 43);}")
+                else:
+                    self.ui.compareResult.setText("Выбранные вами файлы совпадают")
+                    self.ui.compareResult.setStyleSheet("QLabel {color: rgb(0, 255, 127);}")
             else:
-                print("Sizes of two files are not equal")
+                self.ui.compareResult.setText("Размеры файлов не совпадают")
+                self.ui.compareResult.setStyleSheet("QLabel {color: rgb(255, 6, 43);}")
+        else:
+            self.ui.compareResult.setText("Один из файлов пуст")
+            self.ui.compareResult.setStyleSheet("QLabel {color: rgb(255, 6, 43);}")
+        self.ui.compareResult.setVisible(1)
+
 
     def fillTheTables(self, tableNum, base):
         baseCnt = base
         if tableNum == 1:
             table = self.ui.adressTable
             fileData = self.firstFileData
-        else:
+        elif tableNum == 2:
             table = self.ui.secondAdressTable
             fileData = self.secondFileData
+        else:
+            table = self.ui.adressTable
+            fileData = self.readDataArray
         table.setRowCount(0)
 
         for i in range(base, len(fileData), 16):
@@ -170,10 +209,10 @@ class MyWindow(QMainWindow):
                 threeStr = ''.join(fileData[i+8:i+12])
                 forthStr = ''.join(fileData[i+12:i+16])
             # ask Alex,what to fulfiil in such case
-                firstStr = checkString(firstStr)
-                secondStr = checkString(secondStr)
-                threeStr = checkString(threeStr)
-                forthStr = checkString(forthStr)
+                # firstStr = checkString(firstStr)
+                # secondStr = checkString(secondStr)
+                # threeStr = checkString(threeStr)
+                # forthStr = checkString(forthStr)
                 firstStr = makeUpperLetters(firstStr)
                 secondStr = makeUpperLetters(secondStr)
                 threeStr = makeUpperLetters(threeStr)
@@ -194,6 +233,8 @@ class MyWindow(QMainWindow):
         self.ui.finishCompare.setVisible(0)
         self.ui.secondAdressTable.setRowCount(0)
         self.ui.secondFileData = []
+        self.ui.startCompare.setVisible(0)
+        self.ui.compareResult.setVisible(0)
         self.ui.plainTextEdit.appendPlainText("Процесс сравнения завершен")
 
     def fileOpenDialog(self):
@@ -220,34 +261,115 @@ class MyWindow(QMainWindow):
                 result.append(port)
             except (OSError, serial.SerialException):
                 pass
+        
         self.ui.portList.clear()
         self.ui.portList.addItems(result)
-        
         self.AvalaiblePorts = result
 
+        if result:
+            self.ui.warningPorts.setVisible(0)
+        else:
+            pass
+
     def readData(self):
-        pass
-
-    def writeData(self):
-
         myRequest = []
         if self.AvalaiblePorts:
             self.ChoosenPort = self.ui.portList.currentText()
-            print(self.ChoosenPort)
+            # then we ready to start communication
+            mass = [chr(0x1A), chr(self.ui.baseAdress.value())]
+            weReadyMessage = bytes(''.join(mass), 'utf8')
+            # open communication
+            ser = serial.Serial()
+            ser.baudrate = 115200
+            ser.port = self.ChoosenPort
+            ser.open()
+            # send wirst command - we are ready
+            ser.write(weReadyMessage)
+            a = ser.read(4)
+            result = a[1:]
+            # notInBytes = result.decode("utf-8")
+
+            resultNums = []
+            for i in range(len(result)):
+                resultNums.append(result[i])
+
+
+            sum = 0
+            for i in range(len(resultNums)):
+                # print(ord(notInBytes[i]))
+                if i + 1 == len(resultNums):
+                    sum += resultNums[i]
+                else:   
+                    sum += resultNums[i] * 256
+            
+            amountOfSends = int(m.ceil(sum/128))
+            amountOfBig = sum // 128
+            readData = []
+            for i in range(amountOfSends):
+                newString = []
+                if (i + 1) == amountOfSends:
+                    correctLine = ser.read(2 + sum - (128 * amountOfBig))[2:]
+                    for i in range(len(correctLine)):
+                        newString.append(correctLine[i])
+                    readData.append(newString)
+                else:
+                    correctLine = ser.read(130)[2:]
+                    for i in range(len(correctLine)):
+                        newString.append(correctLine[i])
+                    readData.append(newString)
+            ser.close()
+            self.readDataArray = readData
+
+        else:
+            print("Ports are not choosen")
+            self.ui.warningPorts.setVisible(1)
+
+
+    def showReadData(self):
+        if self.readDataArray:
+            configuratedData = []
+            hexArray  = []
+            for i in range(len(self.readDataArray)):
+                for j in range(len(self.readDataArray[i])):
+                    configuratedData.append(self.readDataArray[i][j])
+            for i in range(len(configuratedData)):
+                hexSymb = hex(configuratedData[i])
+                hexArray.append(hexSymb)
+            
+            hexData = []
+            for i in range(len(hexArray)):
+                symbInCode = hexArray[i][2:4]
+                if len(symbInCode) == 1:
+                    symbInCode = '0' + symbInCode
+                hexData.append(symbInCode)
+                
+            self.readDataArray = hexData
+            self.fillTheTables(3, self.ui.baseAdress.value())
+            
+        
+    def writeData(self):
+        if self.AvalaiblePorts:
+
+            self.ChoosenPort = self.ui.portList.currentText()
             # then we ready to start communication
 
-            firstSIgnal = chr(0x1A)
-            secondSignal = chr(self.ui.baseAdress.value())
+            thirdSignal = []
+            mass = [chr(0x1B), chr(self.ui.baseAdress.value())]
 
-            # inBytes = bytes(buf, 'utf-8')
-            # inBytes += bytes(buf2, 'utf-8')
+            firmwareSize = self.openedDataSize
 
-            mass = [firstSIgnal, secondSignal]
+            while firmwareSize:
+                buffer = firmwareSize % 256
+                firmwareSize //= 256
+                thirdSignal.append(chr(buffer))
+            
+            if not firmwareSize and len(thirdSignal) == 2:
+                thirdSignal.append(chr(0))
+
+            
+            mass.extend(thirdSignal[::-1])
             message = bytes(''.join(mass), 'utf8')
 
-
-            # for i in range(len(self.firstFileData)):
-            #     b = self.firstFileData[i]
 
             ser = serial.Serial()
             ser.baudrate = 115200
@@ -255,32 +377,54 @@ class MyWindow(QMainWindow):
             ser.open()
             print(ser.is_open)
             # ser.write(message)
-            # a = ser.read(4)
-            # print(a)
-
-            # a = b'\x1cLor'
-            # # # 4704
-            # result = a[1:]
-            # notInBytes = result.decode("utf-8")
-            # sum = 0
-            # print(notInBytes)
-            # for i in range(len(notInBytes)):
-            #     print(ord(notInBytes[i]))
-            #     if i + 1 == len(notInBytes):
-                    
-            #         sum += ord(notInBytes[i])
-            #     else:   
-            #         sum += ord(notInBytes[i]) * 256
-            # print(a)
-            # print(sum)
-
+            
+            # TODO 
+            # ser.read(2)
+            # check for signal is ready and almost is OK!
+            
+            # send info packs
+            for i in range(0, self.openedDataSize, 127):
+                arrayToSend = self.DataToSend[i:i+127]
+                component = bytes(chr(0x1E), 'utf8')
+                component += bytes(chr(len(arrayToSend)), 'utf8')
+                fullMassege = component + arrayToSend
+                ser.write(fullMassege)
             ser.close()
-
         else:
             print("Ports are not choosen")
-
+            self.ui.warningPorts.setVisible(1)
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyWindow()
+
+
+
+    # app.setStyle(QStyleFactory.create('Fusion'))
+    # darkPalette = QPalette()
+
+    # darkPalette.setColor(QPalette.Window, QColor(53, 53, 53))
+    # darkPalette.setColor(QPalette.WindowText, Qt.white)
+    # darkPalette.setColor(QPalette.Base, QColor(35, 35, 35))
+    # darkPalette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+
+    # darkPalette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
+    # darkPalette.setColor(QPalette.ToolTipText, Qt.white)
+    # darkPalette.setColor(QPalette.Text, Qt.white)
+    # darkPalette.setColor(QPalette.Button, QColor(53, 53, 53))
+    # darkPalette.setColor(QPalette.ButtonText, Qt.white)
+    # darkPalette.setColor(QPalette.BrightText, Qt.red)
+    # darkPalette.setColor(QPalette.Link, QColor(42, 130, 218))
+    # darkPalette.setColor(QPalette.Highlight, QColor(0, 160, 255))
+    # darkPalette.setColor(QPalette.HighlightedText, QColor(35, 35, 35))
+    # darkPalette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
+    # darkPalette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
+    # darkPalette.setColor(QPalette.Disabled, QPalette.WindowText, Qt.darkGray)
+    # darkPalette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
+    # darkPalette.setColor(QPalette.Disabled, QPalette.Light, QColor(53, 53, 53))
+    # darkPalette.setColor(QPalette.PlaceholderText, QColor(100, 100, 100))
+
+    # app.setPalette(darkPalette)
+    # app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
     sys.exit(app.exec())

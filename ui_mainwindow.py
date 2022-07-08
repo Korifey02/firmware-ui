@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1021, 812)
+        MainWindow.resize(1128, 766)
         MainWindow.setMinimumSize(QSize(650, 550))
         MainWindow.setMaximumSize(QSize(16777215, 16777215))
         icon = QIcon()
@@ -44,8 +44,8 @@ class Ui_MainWindow(object):
         self.actionCompare.setObjectName(u"actionCompare")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_5 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_6 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.frame_5 = QFrame(self.centralwidget)
         self.frame_5.setObjectName(u"frame_5")
         self.frame_5.setFrameShape(QFrame.StyledPanel)
@@ -105,7 +105,6 @@ class Ui_MainWindow(object):
         if (self.adressTable.columnCount() < 5):
             self.adressTable.setColumnCount(5)
         __qtablewidgetitem = QTableWidgetItem()
-        __qtablewidgetitem.setBackground(QColor(0, 0, 0));
         self.adressTable.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
         self.adressTable.setHorizontalHeaderItem(1, __qtablewidgetitem1)
@@ -120,6 +119,20 @@ class Ui_MainWindow(object):
 "border: 2px solid #A4004D;\n"
 "background-color: #404040;\n"
 "color: white;\n"
+"}\n"
+"QHeaderView::section\n"
+"{\n"
+"	background-color: #404040;\n"
+"    color: #fff;\n"
+"    text-align: left;\n"
+"	padding: 4px;\n"
+"}\n"
+"\n"
+"QTableCornerButton::section\n"
+"{\n"
+"	background-color: #404040;\n"
+"\n"
+"\n"
 "}")
         self.adressTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -152,7 +165,45 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.frame_3)
 
-        self.finishCompare = QPushButton(self.frame_2)
+        self.compareToolsFrame = QFrame(self.frame_2)
+        self.compareToolsFrame.setObjectName(u"compareToolsFrame")
+        self.compareToolsFrame.setFrameShape(QFrame.StyledPanel)
+        self.compareToolsFrame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_3 = QHBoxLayout(self.compareToolsFrame)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalSpacer_2 = QSpacerItem(258, 28, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
+
+        self.frame_7 = QFrame(self.compareToolsFrame)
+        self.frame_7.setObjectName(u"frame_7")
+        self.frame_7.setFrameShape(QFrame.StyledPanel)
+        self.frame_7.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_5 = QVBoxLayout(self.frame_7)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.startCompare = QPushButton(self.frame_7)
+        self.startCompare.setObjectName(u"startCompare")
+        self.startCompare.setStyleSheet(u"QPushButton{\n"
+"border:  2px solid #A4004D;\n"
+"background-color: #404040;\n"
+"color: white;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"border: 2px solid #A4004D;\n"
+"background-color: #444444;\n"
+"color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed{\n"
+"border: 2px solid white;\n"
+"background-color: #444444;\n"
+"color: white;\n"
+"}")
+
+        self.verticalLayout_5.addWidget(self.startCompare)
+
+        self.finishCompare = QPushButton(self.frame_7)
         self.finishCompare.setObjectName(u"finishCompare")
         self.finishCompare.setStyleSheet(u"QPushButton{\n"
 "border:  2px solid #A4004D;\n"
@@ -172,7 +223,22 @@ class Ui_MainWindow(object):
 "color: white;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.finishCompare)
+        self.verticalLayout_5.addWidget(self.finishCompare)
+
+        self.compareResult = QLabel(self.frame_7)
+        self.compareResult.setObjectName(u"compareResult")
+        self.compareResult.setStyleSheet(u"color: rgb(0, 255, 127);\n"
+"\n"
+"\n"
+"")
+
+        self.verticalLayout_5.addWidget(self.compareResult)
+
+
+        self.horizontalLayout_3.addWidget(self.frame_7)
+
+
+        self.verticalLayout_2.addWidget(self.compareToolsFrame)
 
 
         self.verticalLayout.addWidget(self.frame_2)
@@ -221,6 +287,28 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.Write)
 
+        self.ShowReadData = QPushButton(self.frame)
+        self.ShowReadData.setObjectName(u"ShowReadData")
+        self.ShowReadData.setStyleSheet(u"QPushButton{\n"
+"border:  2px solid #A4004D;\n"
+"background-color: #404040;\n"
+"color: white;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"border: 2px solid #A4004D;\n"
+"background-color: #444444;\n"
+"color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed{\n"
+"border: 2px solid white;\n"
+"background-color: #444444;\n"
+"color: white;\n"
+"}")
+
+        self.verticalLayout.addWidget(self.ShowReadData)
+
 
         self.verticalLayout_4.addWidget(self.frame)
 
@@ -265,6 +353,7 @@ class Ui_MainWindow(object):
 
         self.portList = QComboBox(self.frame_6)
         self.portList.setObjectName(u"portList")
+        self.portList.setMinimumSize(QSize(130, 0))
         self.portList.setStyleSheet(u"QComboBox{\n"
 "border: 2px solid #A4004D;\n"
 "background-color: #404040;\n"
@@ -273,6 +362,12 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.portList)
 
+        self.warningPorts = QLabel(self.frame_6)
+        self.warningPorts.setObjectName(u"warningPorts")
+        self.warningPorts.setStyleSheet(u"color: rgb(255, 6, 43);")
+
+        self.verticalLayout_3.addWidget(self.warningPorts)
+
 
         self.horizontalLayout_2.addWidget(self.frame_6)
 
@@ -280,12 +375,12 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.frame_4)
 
 
-        self.verticalLayout_5.addWidget(self.frame_5)
+        self.verticalLayout_6.addWidget(self.frame_5)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 1021, 26))
+        self.menuBar.setGeometry(QRect(0, 0, 1128, 26))
         font1 = QFont()
         font1.setBold(False)
         font1.setItalic(False)
@@ -333,10 +428,14 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"8", None));
         ___qtablewidgetitem9 = self.secondAdressTable.horizontalHeaderItem(4)
         ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"12", None));
+        self.startCompare.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0440\u0430\u0432\u043d\u0438\u0442\u044c", None))
         self.finishCompare.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043a\u043e\u043d\u0447\u0438\u0442\u044c \u0441\u0440\u0430\u0432\u043d\u0435\u043d\u0438\u0435", None))
+        self.compareResult.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u0432\u0430\u043c\u0438 \u0444\u0430\u0439\u043b\u044b \u0441\u043e\u0432\u043f\u0430\u0434\u0430\u044e\u0442", None))
         self.Read.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0447\u0438\u0442\u0430\u0442\u044c", None))
         self.Write.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043f\u0438\u0441\u0430\u0442\u044c", None))
+        self.ShowReadData.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0441\u0447\u0438\u0442\u0430\u043d\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435", None))
         self.ChoosePort.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u043f\u043e\u0440\u0442", None))
+        self.warningPorts.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0435\u0442 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044b\u0445 \u043f\u043e\u0440\u0442\u043e\u0432", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
 
