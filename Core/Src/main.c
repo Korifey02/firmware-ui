@@ -47,6 +47,7 @@
 SPI_HandleTypeDef hspi1;
 
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
@@ -58,6 +59,7 @@ uint8_t START_SECTOR_OF_FIRMWARE = 0;
 uint32_t firmware_size = 0; //size of firmware
 uint32_t count_of_read = 0;
 uint32_t SIZE_BLOCK = DEFAULT_SIZE_WRITE_STM;
+uint8_t Size_of_firmwware[3] = {};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,6 +68,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -106,8 +109,10 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_SPI1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+  W25qxx_Init(); // initial flash
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -125,7 +130,6 @@ int main(void)
 	  {
 	  	  case 0x1A : // START_READ
 	  		START_SECTOR_OF_FIRMWARE = receive_buffer[1];
-	  		W25qxx_Init(); // initial flash
 
 	  		//page were locate size of firmware
 	  		uint32_t adr_firmw_size = 16 * START_SECTOR_OF_FIRMWARE;
@@ -145,9 +149,9 @@ int main(void)
 	  		transmit_buffer[1] = receive_buffer[0];
 	  		transmit_buffer[2] = receive_buffer[1];
 	  		transmit_buffer[3] = receive_buffer[2];
-	  		HAL_UART_Transmit(&huart1,transmit_buffer,4,5000);
+	  		HAL_UART_Transmit(&huart1,transmit_buffer,4,5000); // send FIRM_SIZE
 
-	  		HAL_Delay(10);
+	  		HAL_Delay(5);
 
 	  		SIZE_BLOCK = DEFAULT_SIZE_WRITE_STM;
 
@@ -174,15 +178,17 @@ int main(void)
 
 			  uint8_t rec_size = SIZE_BLOCK + 2;
 
-			  HAL_UART_Transmit(&huart1,receive_buffer,rec_size,5000);
+			  HAL_UART_Transmit(&huart1,receive_buffer,rec_size,5000); // send FIRM_DATA_READ
 
-			  HAL_Delay(10);
+			  HAL_Delay(2);
 			}
 
 
 	  	  break;
 
-	  	  case 0x1B :
+	  	  case 0x1B : // START_WRITE
+
+	  		SIZE_BLOCK = 256;
 	  		START_SECTOR_OF_FIRMWARE = receive_buffer[1];
 
 	  		firmware_size = (uint32_t)receive_buffer[2];
@@ -191,16 +197,49 @@ int main(void)
 			firmware_size <<= 8;
 			firmware_size += (uint32_t)receive_buffer[4];
 
-			W25qxx_Init(); // initial flash
-
 			// make WRITE_READY
 			transmit_buffer[0] = 0x1D;
+			transmit_buffer[1] = 0x10;
+
+			uint32_t count_of_pages = (firmware_size / 256) + ((firmware_size % 256) ? 1 : 0);
+			uint32_t count_of_sectors = (firmware_size / 4096) + ((firmware_size % 4096) ? 1 : 0);
+
+			HAL_UART_Transmit(&huart2,&count_of_sectors,1,5000);
+			// clear memory before writing
+			for (uint32_t i = 0; i <= count_of_sectors; i++)
+			{
+			  // sectors for clear
+			  uint32_t tmp = i + START_SECTOR_OF_FIRMWARE;
+			  W25qxx_EraseSector(tmp);
+			}
 
 
+			Size_of_firmwware[0] = receive_buffer[2];
+			Size_of_firmwware[1] = receive_buffer[3];
+			Size_of_firmwware[2] = receive_buffer[4];
 
-			HAL_UART_Transmit(&huart1,transmit_buffer,2,5000);
+			int32_t page_start1 = 16 * START_SECTOR_OF_FIRMWARE;
 
+			W25qxx_WritePage(Size_of_firmwware, page_start1, 0, 3);
+			HAL_Delay(300);
 
+			HAL_UART_Transmit(&huart1,transmit_buffer,2,5000); // send WRITE_READY
+
+			for (uint32_t i = 0; i < count_of_pages; i++)
+			{
+				RX = 0;
+				memset(receive_buffer, 0, BUFFER_SIZE);
+				HAL_UART_Receive_DMA(&huart1, receive_buffer, BUFFER_SIZE);
+				while(!RX) {}
+				HAL_UART_DMAStop(&huart1);
+
+				if (receive_buffer[0] != 0x1E)
+					break;
+
+				int32_t page_start =  i + 16 * (START_SECTOR_OF_FIRMWARE + 1); // number of start page
+				W25qxx_WritePage(receive_buffer + 2, page_start, 0, 256);
+				HAL_Delay(5); //impotent!!!
+			}
 
 	  	  break;
 	  }
@@ -326,6 +365,39 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 

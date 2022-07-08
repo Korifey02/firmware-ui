@@ -1,8 +1,9 @@
-main.c:82:5:main	24	static
-main.c:206:6:SystemClock_Config	72	static
-main.c:248:13:MX_SPI1_Init	8	static
-main.c:286:13:MX_USART1_UART_Init	8	static
-main.c:317:13:MX_DMA_Init	16	static
-main.c:338:13:MX_GPIO_Init	40	static
-main.c:371:6:USER_UART_IRQHandler	24	static
-main.c:396:6:Error_Handler	4	static,ignoring_inline_asm
+main.c:85:5:main	40	static
+main.c:267:6:SystemClock_Config	72	static
+main.c:309:13:MX_SPI1_Init	8	static
+main.c:347:13:MX_USART1_UART_Init	8	static
+main.c:380:13:MX_USART2_UART_Init	8	static
+main.c:411:13:MX_DMA_Init	16	static
+main.c:432:13:MX_GPIO_Init	40	static
+main.c:465:6:USER_UART_IRQHandler	24	static
+main.c:490:6:Error_Handler	4	static,ignoring_inline_asm
