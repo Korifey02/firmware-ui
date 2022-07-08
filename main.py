@@ -120,12 +120,6 @@ class MyWindow(QMainWindow):
             # flag which shows that almost is okey
             ok = True
             
-            # bufMass = []
-            # for i in range(len(data)):
-            #     print(data[i])
-            #     print(chr(data[i]))
-            #     bufMass.append(chr(data[i]))
-            
             self.firstFileData = makeHexArray(data)
             self.fillTheTables(1, self.ui.baseAdress.value())
             # Если данные успешно считаны вывести результат в окно отчета
