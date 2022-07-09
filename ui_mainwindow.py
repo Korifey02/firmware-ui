@@ -17,18 +17,18 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QFrame,
-    QHBoxLayout, QHeaderView, QLabel, QMainWindow,
-    QMenu, QMenuBar, QPlainTextEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
+    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 import res_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1128, 766)
-        MainWindow.setMinimumSize(QSize(650, 550))
+        MainWindow.resize(1051, 810)
+        MainWindow.setMinimumSize(QSize(650, 650))
         MainWindow.setMaximumSize(QSize(16777215, 16777215))
         icon = QIcon()
         icon.addFile(u":/newPrefix/res/terminator.ico", QSize(), QIcon.Normal, QIcon.Off)
@@ -42,6 +42,8 @@ class Ui_MainWindow(object):
         self.actionOpen.setFont(font)
         self.actionCompare = QAction(MainWindow)
         self.actionCompare.setObjectName(u"actionCompare")
+        self.actionSave = QAction(MainWindow)
+        self.actionSave.setObjectName(u"actionSave")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_6 = QVBoxLayout(self.centralwidget)
@@ -61,7 +63,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.plainTextEdit = QPlainTextEdit(self.frame)
         self.plainTextEdit.setObjectName(u"plainTextEdit")
-        self.plainTextEdit.setMaximumSize(QSize(16777215, 150))
+        self.plainTextEdit.setMaximumSize(QSize(16777215, 120))
         self.plainTextEdit.setStyleSheet(u"QPlainTextEdit{\n"
 "border: 2px solid #A4004D;\n"
 "background-color: #404040;\n"
@@ -71,23 +73,48 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.plainTextEdit)
 
-        self.label = QLabel(self.frame)
-        self.label.setObjectName(u"label")
-        self.label.setStyleSheet(u"color: rgb(255, 255, 255);")
-
-        self.verticalLayout.addWidget(self.label)
-
-        self.baseAdress = QSpinBox(self.frame)
+        self.frame_8 = QFrame(self.frame)
+        self.frame_8.setObjectName(u"frame_8")
+        self.frame_8.setFrameShape(QFrame.StyledPanel)
+        self.frame_8.setFrameShadow(QFrame.Raised)
+        self.gridLayout = QGridLayout(self.frame_8)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.baseAdress = QSpinBox(self.frame_8)
         self.baseAdress.setObjectName(u"baseAdress")
         self.baseAdress.setStyleSheet(u"QSpinBox{\n"
 "border: 2px solid #A4004D;\n"
 "background-color: #404040;\n"
 "color: white;\n"
 "}")
-        self.baseAdress.setMaximum(1000)
+        self.baseAdress.setMaximum(255)
         self.baseAdress.setValue(29)
 
-        self.verticalLayout.addWidget(self.baseAdress)
+        self.gridLayout.addWidget(self.baseAdress, 1, 0, 1, 1)
+
+        self.label = QLabel(self.frame_8)
+        self.label.setObjectName(u"label")
+        self.label.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+
+        self.label_2 = QLabel(self.frame_8)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.gridLayout.addWidget(self.label_2, 0, 1, 1, 1)
+
+        self.fileSize = QLabel(self.frame_8)
+        self.fileSize.setObjectName(u"fileSize")
+        self.fileSize.setStyleSheet(u"QLabel{\n"
+"border: 2px solid #A4004D;\n"
+"background-color: #404040;\n"
+"color: white;\n"
+"}")
+
+        self.gridLayout.addWidget(self.fileSize, 1, 1, 1, 1)
+
+
+        self.verticalLayout.addWidget(self.frame_8)
 
         self.frame_2 = QFrame(self.frame)
         self.frame_2.setObjectName(u"frame_2")
@@ -97,6 +124,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.frame_3 = QFrame(self.frame_2)
         self.frame_3.setObjectName(u"frame_3")
+        self.frame_3.setMinimumSize(QSize(0, 180))
         self.frame_3.setFrameShape(QFrame.StyledPanel)
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.horizontalLayout = QHBoxLayout(self.frame_3)
@@ -131,8 +159,6 @@ class Ui_MainWindow(object):
 "QTableCornerButton::section\n"
 "{\n"
 "	background-color: #404040;\n"
-"\n"
-"\n"
 "}")
         self.adressTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -156,6 +182,18 @@ class Ui_MainWindow(object):
 "border: 2px solid #A4004D;\n"
 "background-color: #404040;\n"
 "color: white;\n"
+"}\n"
+"QHeaderView::section\n"
+"{\n"
+"	background-color: #404040;\n"
+"    color: #fff;\n"
+"    text-align: left;\n"
+"	padding: 4px;\n"
+"}\n"
+"\n"
+"QTableCornerButton::section\n"
+"{\n"
+"	background-color: #404040;\n"
 "}")
         self.secondAdressTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.secondAdressTable.setAlternatingRowColors(False)
@@ -380,7 +418,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 1128, 26))
+        self.menuBar.setGeometry(QRect(0, 0, 1051, 26))
         font1 = QFont()
         font1.setBold(False)
         font1.setItalic(False)
@@ -396,6 +434,7 @@ class Ui_MainWindow(object):
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionCompare)
+        self.menuFile.addAction(self.actionSave)
 
         self.retranslateUi(MainWindow)
 
@@ -406,8 +445,11 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"WindowTitle", None))
         self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open", None))
         self.actionCompare.setText(QCoreApplication.translate("MainWindow", u"Compare", None))
+        self.actionSave.setText(QCoreApplication.translate("MainWindow", u"Save", None))
         self.plainTextEdit.setPlainText(QCoreApplication.translate("MainWindow", u"\u0414\u043e\u0431\u0440\u043e \u043f\u043e\u0436\u0430\u043b\u043e\u0432\u0430\u0442\u044c!", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0437\u043c\u0435\u0440", None))
+        self.fileSize.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0430\u0439\u043b \u043d\u0435 \u043e\u0442\u043a\u0440\u044b\u0442 \u0438\u043b\u0438 \u043d\u0435 \u0441\u0447\u0438\u0442\u0430\u043d", None))
         ___qtablewidgetitem = self.adressTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Adress", None));
         ___qtablewidgetitem1 = self.adressTable.horizontalHeaderItem(1)

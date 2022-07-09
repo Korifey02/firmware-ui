@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1128</width>
-    <height>766</height>
+    <width>1051</width>
+    <height>810</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>650</width>
-    <height>550</height>
+    <height>650</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -64,7 +64,7 @@
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>150</height>
+              <height>120</height>
              </size>
             </property>
             <property name="styleSheet">
@@ -83,30 +83,66 @@ color: white;
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
+           <widget class="QFrame" name="frame_8">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
             </property>
-            <property name="text">
-             <string>Адрес</string>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="baseAdress">
-            <property name="styleSheet">
-             <string notr="true">QSpinBox{
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="1" column="0">
+              <widget class="QSpinBox" name="baseAdress">
+               <property name="styleSheet">
+                <string notr="true">QSpinBox{
 border: 2px solid #A4004D;
 background-color: #404040;
 color: white;
 }</string>
-            </property>
-            <property name="maximum">
-             <number>1000</number>
-            </property>
-            <property name="value">
-             <number>29</number>
-            </property>
+               </property>
+               <property name="maximum">
+                <number>255</number>
+               </property>
+               <property name="value">
+                <number>29</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);</string>
+               </property>
+               <property name="text">
+                <string>Адрес</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_2">
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);</string>
+               </property>
+               <property name="text">
+                <string>Размер</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="fileSize">
+               <property name="styleSheet">
+                <string notr="true">QLabel{
+border: 2px solid #A4004D;
+background-color: #404040;
+color: white;
+}</string>
+               </property>
+               <property name="text">
+                <string>Файл не открыт или не считан</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
@@ -120,6 +156,12 @@ color: white;
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
               <widget class="QFrame" name="frame_3">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>180</height>
+                </size>
+               </property>
                <property name="frameShape">
                 <enum>QFrame::StyledPanel</enum>
                </property>
@@ -146,8 +188,6 @@ QHeaderView::section
 QTableCornerButton::section
 {
 	background-color: #404040;
-
-
 }</string>
                   </property>
                   <property name="editTriggers">
@@ -187,6 +227,18 @@ QTableCornerButton::section
 border: 2px solid #A4004D;
 background-color: #404040;
 color: white;
+}
+QHeaderView::section
+{
+	background-color: #404040;
+    color: #fff;
+    text-align: left;
+	padding: 4px;
+}
+
+QTableCornerButton::section
+{
+	background-color: #404040;
 }</string>
                   </property>
                   <property name="editTriggers">
@@ -517,7 +569,7 @@ color: white;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1128</width>
+     <width>1051</width>
      <height>26</height>
     </rect>
    </property>
@@ -540,6 +592,7 @@ color: white;
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionCompare"/>
+    <addaction name="actionSave"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -556,6 +609,11 @@ color: white;
   <action name="actionCompare">
    <property name="text">
     <string>Compare</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
    </property>
   </action>
  </widget>

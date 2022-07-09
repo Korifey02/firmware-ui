@@ -1,9 +1,6 @@
 import os
 import sys
 import glob
-from tkinter.ttk import Style
-from unittest import findTestCases
-from numpy import MAY_SHARE_EXACT, byte, full
 import serial.tools.list_ports
 import serial
 import math as m
@@ -16,7 +13,7 @@ from PySide6.QtGui import Qt, QPalette, QColor
 os.system('''pyside6-rcc res.qrc -o res_rc.py
 pyside6-uic MainWindow.ui > ui_mainwindow.py'''.replace('\n', '&'))
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QTableWidgetItem, QHeaderView, QStyleFactory
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QTableWidgetItem, QHeaderView, QStyleFactory, QMessageBox
 
 from ui_mainwindow import Ui_MainWindow
 
@@ -55,6 +52,7 @@ class MyWindow(QMainWindow):
         self.ui.secondAdressTable.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         # open file, when user click button - Open
         self.ui.actionOpen.triggered.connect(self.openFile)
+        self.ui.actionSave.triggered.connect(self.saveReadData)
         # compare files
         self.ui.actionCompare.triggered.connect(self.compareFiles)
         # find all serial ports
@@ -75,7 +73,9 @@ class MyWindow(QMainWindow):
         self.ui.startCompare.setVisible(0)
         self.ui.compareResult.setVisible(0)
 
-        
+        self.ui.ShowReadData.setEnabled(False)
+
+        self.ui.actionSave.setEnabled(False)
 
         self.ui.warningPorts.setVisible(0)
 
@@ -84,6 +84,8 @@ class MyWindow(QMainWindow):
         self.firstFileData = []
         self.secondFileData = []
         self.readDataArray = [] 
+        self.readFromDataForSave = []
+
         self.openedDataSize = 0 
         
         self.ChoosenPort = 'Порт не выбран'
@@ -115,13 +117,13 @@ class MyWindow(QMainWindow):
             if not data:
                 self.ui.plainTextEdit.setPlainText("Считывание данных не выполнено! Выбранный вами файл пуст.")
                 return
-            else:
-                self.ui.plainTextEdit.setPlainText("Процесс выполнения")
             # flag which shows that almost is okey
             ok = True
             
             self.firstFileData = makeHexArray(data)
             self.fillTheTables(1, self.ui.baseAdress.value())
+
+            self.ui.fileSize.setText(str(self.openedDataSize))
             # Если данные успешно считаны вывести результат в окно отчета
             if ok:
                 self.ui.plainTextEdit.appendPlainText("Считывание данных успешно выполнено...")
@@ -131,7 +133,7 @@ class MyWindow(QMainWindow):
         base = self.ui.baseAdress.value()
         self.fillTheTables(1, base)
         self.fillTheTables(2, base)
-        self.ui.plainTextEdit.appendPlainText("Базовый адрес обновлен")
+        self.ui.plainTextEdit.appendPlainText(f"Базовый адрес обновлен на {base}")
 
     def compareFiles(self):
         # show the second table, comparable one
@@ -255,23 +257,22 @@ class MyWindow(QMainWindow):
                 result.append(port)
             except (OSError, serial.SerialException):
                 pass
-        
-        self.ui.portList.clear()
-        self.ui.portList.addItems(result)
-        self.AvalaiblePorts = result
 
         if result:
             self.ui.warningPorts.setVisible(0)
+            self.ui.portList.clear()
+            self.ui.portList.addItems(result)
+            self.AvalaiblePorts = result
         else:
-            pass
+            self.ui.warningPorts.setVisible(1)
 
     def readData(self):
         myRequest = []
         if self.AvalaiblePorts:
             self.ChoosenPort = self.ui.portList.currentText()
             # then we ready to start communication
-            mass = [chr(0x1A), chr(self.ui.baseAdress.value())]
-            weReadyMessage = bytes(''.join(mass), 'utf8')
+            weReadyMessage = bytes([0x1A]) + bytes([self.ui.baseAdress.value()])
+            print(weReadyMessage)
             # open communication
             ser = serial.Serial()
             ser.baudrate = 115200
@@ -282,11 +283,10 @@ class MyWindow(QMainWindow):
             a = ser.read(4)
             result = a[1:]
             # notInBytes = result.decode("utf-8")
-
+            
             resultNums = []
             for i in range(len(result)):
                 resultNums.append(result[i])
-
 
             sum = 0
             for i in range(len(resultNums)):
@@ -295,7 +295,7 @@ class MyWindow(QMainWindow):
                     sum += resultNums[i]
                 else:   
                     sum += resultNums[i] * 256
-            
+            # print(sum , '  szeeeee ')
             amountOfSends = int(m.ceil(sum/128))
             amountOfBig = sum // 128
             readData = []
@@ -311,9 +311,19 @@ class MyWindow(QMainWindow):
                     for i in range(len(correctLine)):
                         newString.append(correctLine[i])
                     readData.append(newString)
-            ser.close()
-            self.readDataArray = readData
+            
+            configuratedData = []
+            for i in range(len(self.readDataArray)):
+                for j in range(len(self.readDataArray[i])):
+                    configuratedData.append(self.readDataArray[i][j])
+            self.readFromDataForSave = configuratedData
 
+            ser.close()
+            self.readDataArray = configuratedData
+            self.ui.ShowReadData.setEnabled(True)
+            self.ui.plainTextEdit.appendPlainText("Считывание данных с контроллера успешно выполнено...")
+            # we allows to save read data
+            self.ui.actionSave.setEnabled(True)
         else:
             print("Ports are not choosen")
             self.ui.warningPorts.setVisible(1)
@@ -321,15 +331,13 @@ class MyWindow(QMainWindow):
 
     def showReadData(self):
         if self.readDataArray:
-            configuratedData = []
             hexArray  = []
+            # I can use makeHexArrayHere
             for i in range(len(self.readDataArray)):
-                for j in range(len(self.readDataArray[i])):
-                    configuratedData.append(self.readDataArray[i][j])
-            for i in range(len(configuratedData)):
-                hexSymb = hex(configuratedData[i])
+                hexSymb = hex(self.readDataArray[i])
                 hexArray.append(hexSymb)
-            
+            # rewrite it
+
             hexData = []
             for i in range(len(hexArray)):
                 symbInCode = hexArray[i][2:4]
@@ -339,51 +347,88 @@ class MyWindow(QMainWindow):
                 
             self.readDataArray = hexData
             self.fillTheTables(3, self.ui.baseAdress.value())
-            
+            ################### ?
+            self.ui.fileSize.setText(str(len(self.readFromDataForSave)))
+        
+    def saveReadData(self):
+        fileData = []
+        for i in range(len(self.readFromDataForSave)):
+            fileData.append(chr(self.readFromDataForSave[i]))
+        # need to open file dialog
         
     def writeData(self):
         if self.AvalaiblePorts:
+            if self.firstFileData:
+                self.ChoosenPort = self.ui.portList.currentText()
 
-            self.ChoosenPort = self.ui.portList.currentText()
-            # then we ready to start communication
+                thirdSignal = []
+                # mass = [chr(0x1B), bytes([self.ui.baseAdress.value()])]
+                weReadyMessage = bytes([0x1B]) + bytes([self.ui.baseAdress.value()])
 
-            thirdSignal = []
-            mass = [chr(0x1B), chr(self.ui.baseAdress.value())]
+                firmwareSize = self.openedDataSize
 
-            firmwareSize = self.openedDataSize
-
-            while firmwareSize:
-                buffer = firmwareSize % 256
-                firmwareSize //= 256
-                thirdSignal.append(chr(buffer))
+                while firmwareSize:
+                    buffer = firmwareSize % 256
+                    firmwareSize //= 256
+                    thirdSignal.append(bytes([buffer]))
+                    print(bytes([buffer]))
+                # print(chr(buffer))
             
-            if not firmwareSize and len(thirdSignal) == 2:
-                thirdSignal.append(chr(0))
+                if not firmwareSize and len(thirdSignal) == 2:
+                    thirdSignal.append(bytes([0]))
 
-            
-            mass.extend(thirdSignal[::-1])
-            message = bytes(''.join(mass), 'utf8')
+            # mass.extend(thirdSignal[::-1])
+                weReadyMessage += thirdSignal[-1] + thirdSignal[-2] + thirdSignal[-3]
+                # message += thirdSignal[-1]
+                # message += thirdSignal[-2]
+                # message += thirdSignal[-3]
 
+                ser = serial.Serial()
+                ser.baudrate = 115200
+                ser.port = self.ChoosenPort
+                ser.open()
+                print(ser.is_open)
+                ser.write(weReadyMessage)
+            # TO DO 
+                a = ser.read(2)
+                result = a[1:]
+                print(result)
+                # result = bytes([0x10])
+                if result == bytes([0x10]):
+                    pass
+                    for i in range(0, self.openedDataSize, 256):
+                        arrayToSend = self.DataToSend[i:i+256]
+                        component = bytes([0x1E])
+                        if len(arrayToSend) == 256:
+                            component += bytes([0])
+                        else:
+                            component += bytes([len(arrayToSend)])
+                        fullMassege = component + arrayToSend
+                        ser.write(fullMassege)
+                    ser.close()
+                # ok
+                    self.ui.plainTextEdit.appendPlainText("Запись данных на контроллер успешно выполнено...")
 
-            ser = serial.Serial()
-            ser.baudrate = 115200
-            ser.port = self.ChoosenPort
-            ser.open()
-            print(ser.is_open)
-            # ser.write(message)
-            
-            # TODO 
-            # ser.read(2)
-            # check for signal is ready and almost is OK!
-            
-            # send info packs
-            for i in range(0, self.openedDataSize, 127):
-                arrayToSend = self.DataToSend[i:i+127]
-                component = bytes(chr(0x1E), 'utf8')
-                component += bytes(chr(len(arrayToSend)), 'utf8')
-                fullMassege = component + arrayToSend
-                ser.write(fullMassege)
-            ser.close()
+                else:
+                    msgBox = QMessageBox()
+                    msgBox.setIcon(QMessageBox.Warning)
+                    msgBox.setText("На стороне контроллера что-то пошло не так")
+                    msgBox.setWindowTitle("Ошибка записи")
+                    msgBox.setStandardButtons(QMessageBox.Ok)
+                    returnValue = msgBox.exec()
+                    ser.close()
+                    return
+                    # warning
+                                
+            else:
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Warning)
+                msgBox.setText("Вы не открыли файл")
+                msgBox.setWindowTitle("Ошибка записи")
+                msgBox.setStandardButtons(QMessageBox.Ok)
+                returnValue = msgBox.exec()
+                return
+
         else:
             print("Ports are not choosen")
             self.ui.warningPorts.setVisible(1)
@@ -392,33 +437,4 @@ class MyWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyWindow()
-
-
-
-    # app.setStyle(QStyleFactory.create('Fusion'))
-    # darkPalette = QPalette()
-
-    # darkPalette.setColor(QPalette.Window, QColor(53, 53, 53))
-    # darkPalette.setColor(QPalette.WindowText, Qt.white)
-    # darkPalette.setColor(QPalette.Base, QColor(35, 35, 35))
-    # darkPalette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-
-    # darkPalette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
-    # darkPalette.setColor(QPalette.ToolTipText, Qt.white)
-    # darkPalette.setColor(QPalette.Text, Qt.white)
-    # darkPalette.setColor(QPalette.Button, QColor(53, 53, 53))
-    # darkPalette.setColor(QPalette.ButtonText, Qt.white)
-    # darkPalette.setColor(QPalette.BrightText, Qt.red)
-    # darkPalette.setColor(QPalette.Link, QColor(42, 130, 218))
-    # darkPalette.setColor(QPalette.Highlight, QColor(0, 160, 255))
-    # darkPalette.setColor(QPalette.HighlightedText, QColor(35, 35, 35))
-    # darkPalette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
-    # darkPalette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
-    # darkPalette.setColor(QPalette.Disabled, QPalette.WindowText, Qt.darkGray)
-    # darkPalette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
-    # darkPalette.setColor(QPalette.Disabled, QPalette.Light, QColor(53, 53, 53))
-    # darkPalette.setColor(QPalette.PlaceholderText, QColor(100, 100, 100))
-
-    # app.setPalette(darkPalette)
-    # app.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
     sys.exit(app.exec())
