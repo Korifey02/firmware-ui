@@ -75,11 +75,26 @@ class MyWindow(QMainWindow):
         self.ui.compareResult.setVisible(0)
 
         self.ui.ShowReadData.setEnabled(False)
-        self.ui.ShowReadData.setStyleSheet("QPushButton {color: rgb(198, 198, 198);}")
+        # 198 73 
+        self.ui.ShowReadData.setStyleSheet('''QPushButton {color: rgb(115, 115, 115);
+                                                            border: 2px solid #A4004D;
+                                                            background-color: #404040;}
+                                            QPushButton:hover {border: 2px solid #A4004D;
+                                                                background-color: #444444;
+                                                                color: white;}            
+                                                            ''')
 
         self.ui.actionSave.setEnabled(False)
 
         self.ui.warningPorts.setVisible(0)
+
+        # self.list1.verticalScrollBar().valueChanged.\
+        #     connect(self.list2.verticalScrollBar().setValue)
+        # self.list2.verticalScrollBar().valueChanged.\
+        #     connect(self.list1.verticalScrollBar().setValue)
+        
+        self.ui.adressTable.verticalScrollBar().valueChanged.connect(self.ui.secondAdressTable.verticalScrollBar().setValue)
+        self.ui.secondAdressTable.verticalScrollBar().valueChanged.connect(self.ui.adressTable.verticalScrollBar().setValue)
 
         # global var, which includes all data
         # self.tableData = []
@@ -87,6 +102,7 @@ class MyWindow(QMainWindow):
         self.secondFileData = []
         self.readDataArray = [] 
         self.readFromDataForSave = []
+        self.readDataArrayInHex = []
 
         self.openedDataSize = 0 
         
@@ -163,6 +179,9 @@ class MyWindow(QMainWindow):
         # okey let's start comparing two files
 
     def startCompareFiles(self):
+        if self.readDataArrayInHex:
+            firstTable = self.readDataArrayInHex
+            # then start compare with read Data
         if self.firstFileData and self.secondFileData:
             difference = []
             ok = 1 
@@ -326,6 +345,16 @@ class MyWindow(QMainWindow):
             self.ui.plainTextEdit.appendPlainText("Считывание данных с контроллера успешно выполнено...")
             # we allows to save read data
             self.ui.actionSave.setEnabled(True)
+            self.ui.ShowReadData.setStyleSheet('''QPushButton{border: 2px solid #A4004D;
+                                                            background-color: #404040;
+                                                            color: white;}
+                                                    QPushButton:hover{ border: 2px solid #A4004D;
+                                                            background-color: #444444;
+                                                            color: white;}
+                                                    QPushButton:pressed{ border: 2px solid white;
+                                                            background-color: #444444;
+                                                            color: white;}         
+                                                            ''')
         else:
             print("Ports are not choosen")
             self.ui.warningPorts.setVisible(1)
@@ -339,6 +368,7 @@ class MyWindow(QMainWindow):
                 hexSymb = hex(self.readDataArray[i])
                 hexArray.append(hexSymb)
             # rewrite it
+            self.readDataArrayInHex = hexArray
 
             hexData = []
             for i in range(len(hexArray)):
@@ -356,6 +386,12 @@ class MyWindow(QMainWindow):
         fileData = []
         for i in range(len(self.readFromDataForSave)):
             fileData.append(chr(self.readFromDataForSave[i]))
+
+        name = QtGui.QFileDialog.getSaveFileName(self, 'Save file')
+        file = open(name, 'wb')
+        
+        for listitem in fileData:
+            fileData.write(listitem)
         # need to open file dialog
         
     def writeData(self):

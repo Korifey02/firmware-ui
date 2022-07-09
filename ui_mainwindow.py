@@ -328,7 +328,6 @@ class Ui_MainWindow(object):
         self.ShowReadData = QPushButton(self.frame)
         self.ShowReadData.setObjectName(u"ShowReadData")
         self.ShowReadData.setStyleSheet(u"QPushButton{\n"
-"\n"
 "border:  2px solid #A4004D;\n"
 "background-color: #404040;\n"
 "color: white;\n"
