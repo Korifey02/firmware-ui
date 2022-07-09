@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import time
 import serial.tools.list_ports
 import serial
 import math as m
@@ -74,6 +75,7 @@ class MyWindow(QMainWindow):
         self.ui.compareResult.setVisible(0)
 
         self.ui.ShowReadData.setEnabled(False)
+        self.ui.ShowReadData.setStyleSheet("QPushButton {color: rgb(198, 198, 198);}")
 
         self.ui.actionSave.setEnabled(False)
 
@@ -303,19 +305,19 @@ class MyWindow(QMainWindow):
                 newString = []
                 if (i + 1) == amountOfSends:
                     correctLine = ser.read(2 + sum - (128 * amountOfBig))[2:]
-                    for i in range(len(correctLine)):
-                        newString.append(correctLine[i])
+                    for j in range(len(correctLine)):
+                        newString.append(correctLine[j])
                     readData.append(newString)
                 else:
                     correctLine = ser.read(130)[2:]
-                    for i in range(len(correctLine)):
-                        newString.append(correctLine[i])
+                    for j in range(len(correctLine)):
+                        newString.append(correctLine[j])
                     readData.append(newString)
             
             configuratedData = []
-            for i in range(len(self.readDataArray)):
-                for j in range(len(self.readDataArray[i])):
-                    configuratedData.append(self.readDataArray[i][j])
+            for i in range(len(readData)):
+                for j in range(len(readData[i])):
+                    configuratedData.append(readData[i][j])
             self.readFromDataForSave = configuratedData
 
             ser.close()
@@ -393,7 +395,7 @@ class MyWindow(QMainWindow):
                 a = ser.read(2)
                 result = a[1:]
                 print(result)
-                # result = bytes([0x10])
+                result = bytes([0x10])
                 if result == bytes([0x10]):
                     pass
                     for i in range(0, self.openedDataSize, 256):
@@ -405,6 +407,7 @@ class MyWindow(QMainWindow):
                             component += bytes([len(arrayToSend)])
                         fullMassege = component + arrayToSend
                         ser.write(fullMassege)
+                        time.sleep(0.05)
                     ser.close()
                 # ok
                     self.ui.plainTextEdit.appendPlainText("Запись данных на контроллер успешно выполнено...")

@@ -438,6 +438,7 @@ color: white;
            <widget class="QPushButton" name="ShowReadData">
             <property name="styleSheet">
              <string notr="true">QPushButton{
+
 border:  2px solid #A4004D;
 background-color: #404040;
 color: white;
