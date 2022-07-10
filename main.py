@@ -83,6 +83,21 @@ class MyWindow(QMainWindow):
                                                                 background-color: #444444;
                                                                 color: white;}            
                                                             ''')
+        # norm ?
+        self.ui.menuBar.setStyleSheet('''QMenuBar{ 
+	                                            color: white;
+	                                            }
+                                        QMenuBar::item
+                                                { color: white; }
+                                    ''')                                   
+        self.ui.menuFile.setStyleSheet('''QMenu
+                                        { color: white;}
+                                        QMenu::item:selected
+                                        {background-color: #4969ff;
+                                            color: #ffffff;}
+                                        QMenu::item:disabled
+                                                {color: #262626;}''')
+
 
         self.ui.actionSave.setEnabled(False)
 
@@ -298,6 +313,12 @@ class MyWindow(QMainWindow):
             # send wirst command - we are ready
             ser.write(weReadyMessage)
             a = ser.read(4)
+
+######################################### New variant of reading #########################################
+
+            # ser = serial.Serial(self.ChoosenPort, 115200, timeout = 5)
+            # a = ser.read(4)    
+
             result = a[1:]
             # notInBytes = result.decode("utf-8")
             
@@ -436,6 +457,10 @@ class MyWindow(QMainWindow):
                 print(ser.is_open)
                 ser.write(weReadyMessage)
             # TO DO 
+######################################### New variant of reading #########################################
+                #ser = serial.Serial(self.ChoosenPort, 115200, timeout = 5)
+                #a = ser.read(2)   
+
                 a = ser.read(2)
                 result = a[1:]
                 print(result)
