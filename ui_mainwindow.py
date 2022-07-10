@@ -27,11 +27,11 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1051, 810)
+        MainWindow.resize(1017, 814)
         MainWindow.setMinimumSize(QSize(650, 650))
         MainWindow.setMaximumSize(QSize(16777215, 16777215))
         icon = QIcon()
-        icon.addFile(u":/newPrefix/res/terminator.ico", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/newPrefix/res/icon.ico", QSize(), QIcon.Normal, QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet(u"background-color: #404040;\n"
 "")
@@ -124,7 +124,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.frame_3 = QFrame(self.frame_2)
         self.frame_3.setObjectName(u"frame_3")
-        self.frame_3.setMinimumSize(QSize(0, 180))
+        self.frame_3.setMinimumSize(QSize(0, 200))
         self.frame_3.setFrameShape(QFrame.StyledPanel)
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.horizontalLayout = QHBoxLayout(self.frame_3)
@@ -205,6 +205,7 @@ class Ui_MainWindow(object):
 
         self.compareToolsFrame = QFrame(self.frame_2)
         self.compareToolsFrame.setObjectName(u"compareToolsFrame")
+        self.compareToolsFrame.setMaximumSize(QSize(16777215, 130))
         self.compareToolsFrame.setFrameShape(QFrame.StyledPanel)
         self.compareToolsFrame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_3 = QHBoxLayout(self.compareToolsFrame)
@@ -215,6 +216,7 @@ class Ui_MainWindow(object):
 
         self.frame_7 = QFrame(self.compareToolsFrame)
         self.frame_7.setObjectName(u"frame_7")
+        self.frame_7.setMaximumSize(QSize(16777215, 95))
         self.frame_7.setFrameShape(QFrame.StyledPanel)
         self.frame_7.setFrameShadow(QFrame.Raised)
         self.verticalLayout_5 = QVBoxLayout(self.frame_7)
@@ -418,7 +420,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QMenuBar(MainWindow)
         self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 1051, 26))
+        self.menuBar.setGeometry(QRect(0, 0, 1017, 26))
         font1 = QFont()
         font1.setBold(False)
         font1.setItalic(False)
@@ -442,7 +444,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"WindowTitle", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"SPIFlashProgrammer", None))
         self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open", None))
         self.actionCompare.setText(QCoreApplication.translate("MainWindow", u"Compare", None))
         self.actionSave.setText(QCoreApplication.translate("MainWindow", u"Save", None))

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1051</width>
-    <height>810</height>
+    <width>1017</width>
+    <height>814</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,11 +23,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>WindowTitle</string>
+   <string>SPIFlashProgrammer</string>
   </property>
   <property name="windowIcon">
    <iconset resource="res.qrc">
-    <normaloff>:/newPrefix/res/terminator.ico</normaloff>:/newPrefix/res/terminator.ico</iconset>
+    <normaloff>:/newPrefix/res/icon.ico</normaloff>:/newPrefix/res/icon.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: #404040;
@@ -159,7 +159,7 @@ color: white;
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>180</height>
+                 <height>200</height>
                 </size>
                </property>
                <property name="frameShape">
@@ -279,6 +279,12 @@ QTableCornerButton::section
              </item>
              <item>
               <widget class="QFrame" name="compareToolsFrame">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>130</height>
+                </size>
+               </property>
                <property name="frameShape">
                 <enum>QFrame::StyledPanel</enum>
                </property>
@@ -301,6 +307,12 @@ QTableCornerButton::section
                 </item>
                 <item>
                  <widget class="QFrame" name="frame_7">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>95</height>
+                   </size>
+                  </property>
                   <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
@@ -569,7 +581,7 @@ color: white;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1051</width>
+     <width>1017</width>
      <height>26</height>
     </rect>
    </property>

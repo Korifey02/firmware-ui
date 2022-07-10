@@ -87,11 +87,6 @@ class MyWindow(QMainWindow):
         self.ui.actionSave.setEnabled(False)
 
         self.ui.warningPorts.setVisible(0)
-
-        # self.list1.verticalScrollBar().valueChanged.\
-        #     connect(self.list2.verticalScrollBar().setValue)
-        # self.list2.verticalScrollBar().valueChanged.\
-        #     connect(self.list1.verticalScrollBar().setValue)
         
         self.ui.adressTable.verticalScrollBar().valueChanged.connect(self.ui.secondAdressTable.verticalScrollBar().setValue)
         self.ui.secondAdressTable.verticalScrollBar().valueChanged.connect(self.ui.adressTable.verticalScrollBar().setValue)
@@ -179,15 +174,16 @@ class MyWindow(QMainWindow):
         # okey let's start comparing two files
 
     def startCompareFiles(self):
+        firstSource = self.firstFileData
         if self.readDataArrayInHex:
-            firstTable = self.readDataArrayInHex
+            firstSource = self.readDataArrayInHex
             # then start compare with read Data
-        if self.firstFileData and self.secondFileData:
+        if firstSource and self.secondFileData:
             difference = []
             ok = 1 
-            if len(self.firstFileData) == len(self.secondFileData):
-                for i in range(len(self.firstFileData)):
-                    if self.firstFileData[i] != self.secondFileData[i]:
+            if len(firstSource) == len(self.secondFileData):
+                for i in range(len(firstSource)):
+                    if firstSource[i] != self.secondFileData[i]:
                         difference.append(i)
                         ok = 0
                         break
@@ -355,6 +351,8 @@ class MyWindow(QMainWindow):
                                                             background-color: #444444;
                                                             color: white;}         
                                                             ''')
+            # clean the opened data
+            self.firstFileData = []
         else:
             print("Ports are not choosen")
             self.ui.warningPorts.setVisible(1)
@@ -384,15 +382,25 @@ class MyWindow(QMainWindow):
         
     def saveReadData(self):
         fileData = []
+        # copyData = [1, 123, 124, 45, 24, 123, 255, 253]
         for i in range(len(self.readFromDataForSave)):
             fileData.append(chr(self.readFromDataForSave[i]))
+        # fileData= []
+        # for i in range(len(copyData)):
+            # fileData.append(chr(copyData[i]))
+        res = ''.join(fileData)
+        # FileDial = QFileDialog(caption="Выберите файл с прошивкой", filter="Текст (*.bin)")
+        # if (not FileDial.exec()): return
+        # openedFile = FileDial.selectedFiles()[0]
 
-        name = QtGui.QFileDialog.getSaveFileName(self, 'Save file')
-        file = open(name, 'wb')
+        name = QFileDialog.getSaveFileName(self, 'Save file', filter="Текст (*.bin)")[0]
+        print(name)
+        file = open(name, 'w', encoding="utf-8")
         
-        for listitem in fileData:
-            fileData.write(listitem)
+        # for listitem in fileData:
+        file.write(res)
         # need to open file dialog
+        file.close()
         
     def writeData(self):
         if self.AvalaiblePorts:
